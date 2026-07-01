@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brief Mensual Comunicaciones Kala</title>
+
+  <style>
+    :root {
+      --azul-oscuro: #062951;
+      --azul: #146FD6;
+      --verde: #0A8754;
+      --fondo: #F1F5F9;
+      --blanco: #ffffff;
+      --texto: #1f2937;
+      --borde: #dbe3ef;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--fondo);
+      color: var(--texto);
+    }
+
+    .container { width: 100%; max-width: 760px; margin: 0 auto; padding: 20px; }
+
+    .header {
+      background: var(--azul-oscuro);
+      color: var(--blanco);
+      padding: 28px 22px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .header .logo { height: 40px; width: auto; display: block; margin-bottom: 18px; }
+    .header h1 { margin: 0 0 8px; font-size: 24px; line-height: 1.2; }
+    .header p { margin: 0; opacity: 0.9; font-size: 15px; line-height: 1.5; }
+
+    form { display: grid; gap: 18px; }
+
+    .section {
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(6, 41, 81, 0.06);
+    }
+    .section h2 { margin: 0 0 16px; font-size: 18px; color: var(--azul-oscuro); }
+    .section .section-desc { margin: -8px 0 16px; font-size: 13px; color: #64748b; }
+
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+    label .help { display: block; font-weight: 400; font-size: 12px; color: #64748b; margin-top: 2px; }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    input:focus, textarea:focus {
+      border-color: var(--azul);
+      box-shadow: 0 0 0 3px rgba(20, 111, 214, 0.12);
+    }
+
+    .options { display: grid; gap: 10px; }
+    .option {
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 11px 13px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: border-color .15s, background .15s;
+    }
+    .option:hover { border-color: var(--azul); }
+    .option input { width: auto; margin: 0; accent-color: var(--azul); cursor: pointer; }
+    .option.checked { border-color: var(--azul); background: rgba(20, 111, 214, 0.06); }
+    .option input:disabled { cursor: not-allowed; }
+    .option:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+
+    .conditional { display: none; }
+    .conditional.visible { display: block; }
+
+    .otro-field { display: none; margin-top: 10px; }
+    .otro-field.visible { display: block; }
+
+    .pauta-block { border-left: 4px solid var(--azul); padding-left: 14px; margin-top: 4px; }
+
+    .audience-block {
+      border: 1px dashed var(--borde);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+    .audience-block h3 {
+      margin: 0 0 14px; font-size: 15px; color: var(--azul);
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+
+    .button {
+      width: 100%; border: 0; background: var(--azul); color: white;
+      padding: 16px; font-size: 16px; font-weight: 700;
+      border-radius: 14px; cursor: pointer;
+    }
+    .button:hover { background: #0f5fbb; }
+    .button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .message { display: none; padding: 14px; border-radius: 12px; font-weight: 700; text-align: center; }
+    .success { display: block; background: rgba(10, 135, 84, 0.12); color: var(--verde); }
+    .error { display: block; background: rgba(220, 38, 38, 0.12); color: #b91c1c; }
+    .field-error { border-color: #dc2626 !important; }
+
+    @media (min-width: 720px) {
+      .header h1 { font-size: 30px; }
+      .section { padding: 26px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <header class="header">
+      <img src="data:image/png;base64,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" alt="Kala" class="logo" />
+      <h1>Brief Mensual de Comunicaciones Kala</h1>
+      <p>Complete este formulario para alinear prioridades, contenido, tecnología, cultura y material disponible del mes.</p>
+    </header>
+
+    <form id="briefForm" novalidate>
+      <section class="section">
+        <h2>Información general</h2>
+        <div class="field">
+          <label for="mes">Mes de la parrilla</label>
+          <input id="mes" name="mes" type="text" placeholder="Ej: Julio 2026" required />
+        </div>
+        <div class="field">
+          <label for="responsable">Nombre de quien diligencia</label>
+          <input id="responsable" name="responsable" type="text" required />
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Objetivo del mes</h2>
+
+        <div class="field">
+          <label>¿Cuál es el objetivo de comunicación este mes?
+            <span class="help">Elija hasta 2. Mientras menos, más foco tendrá el contenido.</span>
+          </label>
+          <div class="options" id="objetivoMesOptions">
+            <label class="option"><input type="checkbox" name="objetivo_mes" value="Generar solicitudes / leads" /> Generar solicitudes / leads</label>
+            <label class="option"><input type="checkbox" name="objetivo_mes" value="Aumentar reconocimiento de marca" /> Aumentar reconocimiento de marca</label>
+            <label class="option"><input type="checkbox" name="objetivo_mes" value="Educar sobre un producto" /> Educar sobre un producto</label>
+            <label class="option"><input type="checkbox" name="objetivo_mes" value="Atraer asesores (reclutamiento)" /> Atraer asesores (reclutamiento)</label>
+            <label class="option"><input type="checkbox" name="objetivo_mes" value="Fortalecer confianza / prueba social" /> Fortalecer confianza / prueba social</label>
+            <label class="option"><input type="checkbox" name="objetivo_mes" value="Otro" data-otro="objetivo_mes" /> Otro</label>
+          </div>
+          <div class="otro-field" data-otro-for="objetivo_mes">
+            <input type="text" name="objetivo_mes_otro" placeholder="Especifique el objetivo" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Prioridad #1 del mes
+            <span class="help">Si solo pudiéramos hacer una cosa muy bien este mes, ¿cuál sería?</span>
+          </label>
+          <input type="text" name="prioridad_uno" placeholder="La pieza o tema más importante del mes" />
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Prioridades</h2>
+        <div class="field">
+          <label>¿Qué necesita impulsar Kala este mes?</label>
+          <textarea name="impulsar_mes" required></textarea>
+        </div>
+        <div class="field">
+          <label>¿Hay una pagaduría que necesitemos fortalecer?</label>
+          <textarea name="pagaduria"></textarea>
+        </div>
+        <div class="field">
+          <label>¿Hay cambios en tasas, montos o políticas este mes?</label>
+          <div class="options">
+            <label class="option"><input type="radio" name="hay_cambios" value="Sí" data-otro="hay_cambios" /> Sí</label>
+            <label class="option"><input type="radio" name="hay_cambios" value="No" checked /> No</label>
+          </div>
+          <div class="otro-field" data-otro-for="hay_cambios">
+            <textarea name="cambios_politicas" placeholder="Describa el cambio (tasa, monto, política)"></textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label>¿Qué quiere comunicar la dirección este mes?</label>
+          <textarea name="mensaje_direccion"></textarea>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Tecnología e innovación</h2>
+        <div class="field">
+          <label>¿Qué nuevas funciones tiene Jarvis?</label>
+          <textarea name="funciones_jarvis"></textarea>
+        </div>
+        <div class="field">
+          <label>¿Hay cifras nuevas de velocidad o eficiencia?</label>
+          <textarea name="cifras_eficiencia"></textarea>
+        </div>
+        <div class="field">
+          <label>¿Qué novedades técnicas vale la pena mostrar?</label>
+          <textarea name="novedades_tecnicas"></textarea>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Pilares de contenido del mes</h2>
+        <p class="section-desc">Marque los pilares que se trabajarán este mes. Solo se despliegan los insumos de los que marque.</p>
+        <div class="field">
+          <div class="options">
+            <label class="option"><input type="checkbox" name="pilares" value="Cultura Interna (Kalers)" data-pilar="kalers" /> Cultura Interna — "Kalers"</label>
+            <label class="option"><input type="checkbox" name="pilares" value="Casos de Éxito" data-pilar="casos" /> Casos de Éxito</label>
+            <label class="option"><input type="checkbox" name="pilares" value="Reclutamiento (Fuerza Azul Kala)" data-pilar="reclutamiento" /> Reclutamiento — "Fuerza Azul Kala"</label>
+            <label class="option"><input type="checkbox" name="pilares" value="Educación y Producto" data-pilar="educacion" /> Educación y Producto</label>
+            <label class="option"><input type="checkbox" name="pilares" value="Prueba Social" data-pilar="prueba" /> Prueba Social</label>
+            <label class="option"><input type="checkbox" name="pilares" value="Temporalidades" data-pilar="temporalidades" /> Temporalidades</label>
+          </div>
+        </div>
+
+        <!-- KALERS -->
+        <div class="conditional audience-block" id="pilarKalers">
+          <h3>Cultura Interna — "Kalers"</h3>
+          <div class="field">
+            <label>¿Qué Kaler entrevistamos o destacamos este mes?
+              <span class="help">Persona del equipo, su rol y por qué es interesante su historia.</span>
+            </label>
+            <textarea name="kaler_entrevista"></textarea>
+          </div>
+          <div class="field">
+            <label>¿Hay día a día en oficina o visita de campo que mostrar?</label>
+            <textarea name="kaler_dia"></textarea>
+          </div>
+          <div class="field">
+            <label>Nuevos colaboradores o celebraciones del mes</label>
+            <textarea name="kaler_celebraciones"></textarea>
+          </div>
+        </div>
+
+        <!-- CASOS DE ÉXITO -->
+        <div class="conditional audience-block" id="pilarCasos">
+          <h3>Casos de Éxito</h3>
+          <div class="field">
+            <label>¿Qué asesor creció con Kala y podemos contar?
+              <span class="help">Nombre o perfil, y el logro concreto.</span>
+            </label>
+            <textarea name="caso_asesor"></textarea>
+          </div>
+          <div class="field">
+            <label>¿Qué cliente satisfecho tiene una historia real?</label>
+            <textarea name="caso_cliente"></textarea>
+          </div>
+        </div>
+
+        <!-- RECLUTAMIENTO -->
+        <div class="conditional audience-block" id="pilarReclutamiento">
+          <h3>Reclutamiento — "Fuerza Azul Kala"</h3>
+          <div class="field">
+            <label>¿Qué voz del equipo comercial usamos para atraer asesores?</label>
+            <textarea name="reclutamiento_voz"></textarea>
+          </div>
+          <div class="field">
+            <label>¿Qué atributo de originar con Kala queremos destacar?
+              <span class="help">Ej: velocidad de Jarvis, respaldo, comisiones, acompañamiento.</span>
+            </label>
+            <textarea name="reclutamiento_atributo"></textarea>
+          </div>
+        </div>
+
+        <!-- EDUCACIÓN Y PRODUCTO -->
+        <div class="conditional audience-block" id="pilarEducacion">
+          <h3>Educación y Producto</h3>
+          <div class="field">
+            <label>Tema de educación financiera del mes</label>
+            <textarea name="educacion_tema"></textarea>
+          </div>
+          <div class="field">
+            <label>¿Qué funcionalidad de Jarvis o de la App mostramos?</label>
+            <textarea name="educacion_tutorial"></textarea>
+          </div>
+          <div class="field">
+            <label>¿Qué preguntan más pensionados o asesores? (para resolver en contenido)</label>
+            <textarea name="educacion_preguntas"></textarea>
+          </div>
+        </div>
+
+        <!-- PRUEBA SOCIAL -->
+        <div class="conditional audience-block" id="pilarPrueba">
+          <h3>Prueba Social</h3>
+          <div class="field">
+            <label>¿Qué testimonios de clientes validan la marca este mes?</label>
+            <textarea name="prueba_testimonios"></textarea>
+          </div>
+        </div>
+
+        <!-- TEMPORALIDADES -->
+        <div class="conditional audience-block" id="pilarTemporalidades">
+          <h3>Temporalidades</h3>
+          <div class="field">
+            <label>Efemérides, fechas clave o contenido coyuntural del mes</label>
+            <textarea name="temporalidades_fechas"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Fechas comerciales</h2>
+        <div class="field">
+          <label>Eventos comerciales</label>
+          <textarea name="eventos_comerciales"></textarea>
+        </div>
+        <div class="field">
+          <label>Lanzamientos</label>
+          <textarea name="lanzamientos"></textarea>
+        </div>
+        <div class="field">
+          <label>Convenciones</label>
+          <textarea name="convenciones"></textarea>
+        </div>
+      </section>
+
+      <!-- ====================== MÓDULO PERFORMANCE MARKETING ====================== -->
+      <section class="section">
+        <h2>Módulo Performance Marketing</h2>
+        <p class="section-desc">Solo para pauta. Diligenciar únicamente si este mes habrá inversión en campañas.</p>
+
+        <div class="field">
+          <label>¿Este mes habrá pauta?</label>
+          <div class="options">
+            <label class="option"><input type="radio" name="hay_pauta" value="Sí" /> Sí</label>
+            <label class="option"><input type="radio" name="hay_pauta" value="No" checked /> No</label>
+          </div>
+        </div>
+
+        <div class="conditional pauta-block" id="pautaBody">
+
+          <!-- 1. AUDIENCIA -->
+          <div class="field">
+            <label>¿A quién va dirigida esta campaña?
+              <span class="help">Esta respuesta define qué preguntas verás a continuación. Puede marcar varias.</span>
+            </label>
+            <div class="options">
+              <label class="option"><input type="checkbox" name="audiencia" value="Pensionados" data-audience="pensionados" /> Pensionados</label>
+              <label class="option"><input type="checkbox" name="audiencia" value="Asesores independientes" data-audience="asesores" /> Asesores independientes</label>
+              <label class="option"><input type="checkbox" name="audiencia" value="Marca / Institucional" data-audience="marca" /> Marca / Institucional</label>
+              <label class="option"><input type="checkbox" name="audiencia" value="Otro" data-otro="audiencia" /> Otro (especificar)</label>
+            </div>
+            <div class="otro-field" data-otro-for="audiencia">
+              <input type="text" name="audiencia_otro" placeholder="Especifique cuál" />
+            </div>
+          </div>
+
+          <!-- BLOQUE COMÚN -->
+          <div class="conditional" id="bloqueComun">
+            <div class="field">
+              <label>Objetivo principal del mes
+                <span class="help">¿Qué objetivo comercial tiene prioridad? Puede marcar varios.</span>
+              </label>
+              <div class="options">
+                <label class="option"><input type="checkbox" name="objetivo" value="Generar leads pensionados" /> Generar leads pensionados</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Compra de cartera" /> Compra de cartera</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Libre inversión" /> Libre inversión</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Captación de asesores" /> Captación de asesores</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Reconocimiento de marca" /> Reconocimiento de marca</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Interacción" /> Interacción</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Tráfico" /> Tráfico</label>
+                <label class="option"><input type="checkbox" name="objetivo" value="Otro" data-otro="objetivo" /> Otro</label>
+              </div>
+              <div class="otro-field" data-otro-for="objetivo">
+                <input type="text" name="objetivo_otro" placeholder="Especifique el objetivo" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Prioridad de productos
+                <span class="help">¿Qué producto debemos impulsar primero? Ej: Libre inversión, Compra de Cartera, Jarvis...</span>
+              </label>
+              <textarea name="prioridad_productos"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Promesa comercial
+                <span class="help">¿Qué mensaje debemos reforzar?</span>
+              </label>
+              <textarea name="promesa_comercial"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Restricciones
+                <span class="help">¿Qué NO debemos comunicar? Ej: no hablar de tasas, no mencionar cierta pagaduría, cierto monto o determinada palabra.</span>
+              </label>
+              <textarea name="restricciones"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Ubicaciones prioritarias
+                <span class="help">¿Qué ciudades? Puede marcar varias.</span>
+              </label>
+              <div class="options">
+                <label class="option"><input type="checkbox" name="ubicaciones" value="Bogotá" /> Bogotá</label>
+                <label class="option"><input type="checkbox" name="ubicaciones" value="Medellín" /> Medellín</label>
+                <label class="option"><input type="checkbox" name="ubicaciones" value="Cali" /> Cali</label>
+                <label class="option"><input type="checkbox" name="ubicaciones" value="Costa" /> Costa</label>
+                <label class="option"><input type="checkbox" name="ubicaciones" value="Nacional" /> Nacional</label>
+                <label class="option"><input type="checkbox" name="ubicaciones" value="Otra" data-otro="ubicaciones" /> Otra</label>
+              </div>
+              <div class="otro-field" data-otro-for="ubicaciones">
+                <input type="text" name="ubicaciones_otro" placeholder="Especifique la ciudad" />
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOQUE PENSIONADOS -->
+          <div class="conditional audience-block" id="bloquePensionados">
+            <h3>Campaña a Pensionados</h3>
+            <div class="field">
+              <label>Prioridad de pagadurías
+                <span class="help">¿Qué pagadurías tienen prioridad este mes? Puede marcar varias.</span>
+              </label>
+              <div class="options">
+                <label class="option"><input type="checkbox" name="pagadurias" value="Colpensiones" /> Colpensiones</label>
+                <label class="option"><input type="checkbox" name="pagadurias" value="FOPEP" /> FOPEP</label>
+                <label class="option"><input type="checkbox" name="pagadurias" value="Casur" /> Casur</label>
+                <label class="option"><input type="checkbox" name="pagadurias" value="Cremil" /> Cremil</label>
+                <label class="option"><input type="checkbox" name="pagadurias" value="Fiduprevisora" /> Fiduprevisora</label>
+                <label class="option"><input type="checkbox" name="pagadurias" value="Otra" data-otro="pagadurias" /> Otra</label>
+              </div>
+              <div class="otro-field" data-otro-for="pagadurias">
+                <input type="text" name="pagadurias_otro" placeholder="Especifique la pagaduría" />
+              </div>
+            </div>
+            <div class="field">
+              <label>¿Qué producto se impulsará a pensionados?</label>
+              <textarea name="pen_producto"></textarea>
+            </div>
+            <div class="field">
+              <label>¿Qué monto se quiere comunicar?</label>
+              <textarea name="pen_monto"></textarea>
+            </div>
+            <div class="field">
+              <label>¿Qué necesidad del pensionado queremos resolver?</label>
+              <textarea name="pen_necesidad"></textarea>
+            </div>
+            <div class="field">
+              <label>¿Qué tipo de creatividad necesitamos?</label>
+              <textarea name="pen_creatividad"></textarea>
+            </div>
+          </div>
+
+          <!-- BLOQUE ASESORES -->
+          <div class="conditional audience-block" id="bloqueAsesores">
+            <h3>Campaña a Asesores</h3>
+            <div class="field">
+              <label>¿Qué beneficio queremos comunicar a los asesores?</label>
+              <textarea name="ase_beneficio"></textarea>
+            </div>
+            <div class="field">
+              <label>¿Buscamos captación o activación?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="ase_objetivo" value="Captación" /> Captación</label>
+                <label class="option"><input type="radio" name="ase_objetivo" value="Activación" /> Activación</label>
+                <label class="option"><input type="radio" name="ase_objetivo" value="Ambas" /> Ambas</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>¿Qué herramienta de Kala queremos destacar?
+                <span class="help">Ej: Jarvis, Kala Go App...</span>
+              </label>
+              <textarea name="ase_herramienta"></textarea>
+            </div>
+            <div class="field">
+              <label>¿Qué dolor del asesor queremos atacar?</label>
+              <textarea name="ase_dolor"></textarea>
+            </div>
+          </div>
+
+          <!-- BLOQUE MARCA -->
+          <div class="conditional audience-block" id="bloqueMarca">
+            <h3>Campaña de Marca / Institucional</h3>
+            <div class="field">
+              <label>¿Qué atributo de marca queremos posicionar?</label>
+              <textarea name="marca_atributo"></textarea>
+            </div>
+            <div class="field">
+              <label>¿Qué percepción queremos generar o corregir?</label>
+              <textarea name="marca_percepcion"></textarea>
+            </div>
+          </div>
+
+          <!-- BLOQUE CIERRE COMÚN -->
+          <div class="conditional" id="bloqueCierre">
+            <div class="field">
+              <label>Público prioritario (segmento fino)
+                <span class="help">¿Qué público tiene prioridad? Puede marcar varios.</span>
+              </label>
+              <div class="options">
+                <label class="option"><input type="checkbox" name="publico_fino" value="Pensionados" /> Pensionados</label>
+                <label class="option"><input type="checkbox" name="publico_fino" value="Pensionados nuevos" /> Pensionados nuevos</label>
+                <label class="option"><input type="checkbox" name="publico_fino" value="Pensionados reportados" /> Pensionados reportados</label>
+                <label class="option"><input type="checkbox" name="publico_fino" value="Asesores independientes" /> Asesores independientes</label>
+                <label class="option"><input type="checkbox" name="publico_fino" value="Todos" /> Todos</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>¿Hay presupuesto especial?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="hay_presupuesto" value="Sí" data-show="presupuestoDetalle" /> Sí</label>
+                <label class="option"><input type="radio" name="hay_presupuesto" value="No" checked /> No</label>
+              </div>
+              <div class="conditional" id="presupuestoDetalle" style="margin-top:12px;">
+                <div class="field"><label>Presupuesto</label><input type="text" name="presupuesto_monto" placeholder="Ej: $5.000.000" /></div>
+                <div class="field"><label>Campaña</label><input type="text" name="presupuesto_campana" placeholder="Nombre de la campaña" /></div>
+                <div class="field"><label>Fecha</label><input type="text" name="presupuesto_fecha" placeholder="Ej: 5 al 25 de julio" /></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>¿Habrá landing?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="hay_landing" value="Sí" data-show="landingDetalle" /> Sí</label>
+                <label class="option"><input type="radio" name="hay_landing" value="No" checked /> No</label>
+              </div>
+              <div class="conditional" id="landingDetalle" style="margin-top:12px;">
+                <div class="field"><label>Link o referencia de la landing</label><input type="text" name="landing_link" placeholder="URL o nota" /></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>WhatsApp</label>
+              <div class="field">
+                <label style="font-weight:400;">¿Qué número?</label>
+                <input type="text" name="whatsapp_numero" placeholder="Ej: 300 000 0000" />
+              </div>
+              <div class="field">
+                <label style="font-weight:400;">¿Qué mensaje inicial?</label>
+                <textarea name="whatsapp_mensaje"></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Oferta — ¿Qué CTA debemos usar?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="cta" value="Solicitar estudio" /> Solicitar estudio</label>
+                <label class="option"><input type="radio" name="cta" value="Hablar por WhatsApp" /> Hablar por WhatsApp</label>
+                <label class="option"><input type="radio" name="cta" value="Cotizar" /> Cotizar</label>
+                <label class="option"><input type="radio" name="cta" value="Conocer Kala" /> Conocer Kala</label>
+                <label class="option"><input type="radio" name="cta" value="Otro" data-otro="cta" /> Otro</label>
+              </div>
+              <div class="otro-field" data-otro-for="cta">
+                <input type="text" name="cta_otro" placeholder="Especifique el CTA" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      <!-- ==================== FIN MÓDULO PERFORMANCE MARKETING ==================== -->
+
+      <section class="section">
+        <h2>Volumen y formato esperado</h2>
+        <p class="section-desc">Define en qué formato, para que la producción sea predecible.</p>
+
+        <div class="field">
+          <label>¿Qué formatos se necesitan? <span class="help">Puede marcar varios.</span></label>
+          <div class="options">
+            <label class="option"><input type="checkbox" name="formatos" value="Reels / video" /> Reels / video</label>
+            <label class="option"><input type="checkbox" name="formatos" value="Carrusel" /> Carrusel</label>
+            <label class="option"><input type="checkbox" name="formatos" value="Post estático" /> Post estático</label>
+            <label class="option"><input type="checkbox" name="formatos" value="Historias" /> Historias</label>
+            <label class="option"><input type="checkbox" name="formatos" value="Comunicación interna" /> Comunicación interna</label>
+            <label class="option"><input type="checkbox" name="formatos" value="Otro" data-otro="formatos" /> Otro</label>
+          </div>
+          <div class="otro-field" data-otro-for="formatos">
+            <input type="text" name="formatos_otro" placeholder="Especifique el formato" />
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Material disponible</h2>
+        <div class="field">
+          <label>Link de carpeta en Drive con fotos, videos, oficinas, Jarvis, plataforma, equipo, clientes autorizados y eventos</label>
+          <input name="drive_link" type="url" placeholder="https://drive.google.com/..." />
+        </div>
+        <div class="field">
+          <label>Notas adicionales sobre el material</label>
+          <textarea name="notas_material"></textarea>
+        </div>
+      </section>
+
+      <button class="button" type="submit">Enviar brief mensual</button>
+      <div id="formMessage" class="message"></div>
+    </form>
+  </main>
+
+  <script>
+    const WEBHOOK_URL = "https://agencia-chispa-n8n.jukekq.easypanel.host/webhook/formkala";
+
+    const form = document.getElementById("briefForm");
+    const message = document.getElementById("formMessage");
+
+    function show(el) { if (el) el.classList.add("visible"); }
+    function hide(el) { if (el) el.classList.remove("visible"); }
+    function isVisible(el) { return el && el.offsetParent !== null; }
+
+    function refreshOptionStyles() {
+      document.querySelectorAll(".option").forEach(opt => {
+        const input = opt.querySelector("input");
+        if (input) opt.classList.toggle("checked", input.checked);
+      });
+    }
+
+    // ---- ¿Hay pauta? ----
+    const pautaBody = document.getElementById("pautaBody");
+    document.querySelectorAll('input[name="hay_pauta"]').forEach(r => {
+      r.addEventListener("change", () => {
+        if (r.value === "Sí" && r.checked) show(pautaBody);
+        else if (r.value === "No" && r.checked) hide(pautaBody);
+        refreshOptionStyles();
+      });
+    });
+
+    // ---- Audiencia ----
+    const bloques = {
+      comun: document.getElementById("bloqueComun"),
+      pensionados: document.getElementById("bloquePensionados"),
+      asesores: document.getElementById("bloqueAsesores"),
+      marca: document.getElementById("bloqueMarca"),
+      cierre: document.getElementById("bloqueCierre")
+    };
+
+    function refreshAudiencia() {
+      const seleccion = Array.from(document.querySelectorAll('input[name="audiencia"]:checked'))
+        .map(i => i.dataset.audience).filter(Boolean);
+      const hayAlguna = document.querySelectorAll('input[name="audiencia"]:checked').length > 0;
+
+      if (hayAlguna) { show(bloques.comun); show(bloques.cierre); }
+      else { hide(bloques.comun); hide(bloques.cierre); }
+
+      seleccion.includes("pensionados") ? show(bloques.pensionados) : hide(bloques.pensionados);
+      seleccion.includes("asesores") ? show(bloques.asesores) : hide(bloques.asesores);
+      seleccion.includes("marca") ? show(bloques.marca) : hide(bloques.marca);
+    }
+    document.querySelectorAll('input[name="audiencia"]').forEach(c => {
+      c.addEventListener("change", () => { refreshAudiencia(); refreshOptionStyles(); });
+    });
+
+    // ---- Pilares de contenido (Laura) ----
+    const pilaresMap = {
+      kalers: "pilarKalers",
+      casos: "pilarCasos",
+      reclutamiento: "pilarReclutamiento",
+      educacion: "pilarEducacion",
+      prueba: "pilarPrueba",
+      temporalidades: "pilarTemporalidades"
+    };
+    function refreshPilares() {
+      document.querySelectorAll('input[name="pilares"]').forEach(chk => {
+        const target = document.getElementById(pilaresMap[chk.dataset.pilar]);
+        chk.checked ? show(target) : hide(target);
+      });
+    }
+    document.querySelectorAll('input[name="pilares"]').forEach(c => {
+      c.addEventListener("change", () => { refreshPilares(); refreshOptionStyles(); });
+    });
+
+    // ---- Objetivo del mes: máximo 2 ----
+    const objMesInputs = document.querySelectorAll('input[name="objetivo_mes"]');
+    objMesInputs.forEach(chk => {
+      chk.addEventListener("change", () => {
+        const marcados = document.querySelectorAll('input[name="objetivo_mes"]:checked').length;
+        if (marcados >= 2) {
+          objMesInputs.forEach(i => { if (!i.checked) i.disabled = true; });
+        } else {
+          objMesInputs.forEach(i => { i.disabled = false; });
+        }
+        refreshOptionStyles();
+      });
+    });
+
+    // ---- Campos "Otro" ----
+    function bindOtro(grupo) {
+      const inputs = document.querySelectorAll(`input[data-otro="${grupo}"]`);
+      const wrap = document.querySelector(`[data-otro-for="${grupo}"]`);
+      function update() {
+        const algunoMarcado = Array.from(inputs).some(i => i.checked);
+        algunoMarcado ? show(wrap) : hide(wrap);
+        const txt = wrap ? wrap.querySelector("input, textarea") : null;
+        if (txt) txt.required = algunoMarcado;
+      }
+      inputs.forEach(i => i.addEventListener("change", () => { update(); refreshOptionStyles(); }));
+      if (inputs[0] && inputs[0].type === "radio") {
+        document.querySelectorAll(`input[name="${inputs[0].name}"]`).forEach(r => r.addEventListener("change", update));
+      }
+    }
+    ["audiencia", "objetivo", "ubicaciones", "pagadurias", "cta", "objetivo_mes", "hay_cambios", "formatos"].forEach(bindOtro);
+
+    // ---- Detalles (presupuesto, landing) ----
+    document.querySelectorAll('input[data-show]').forEach(() => {});
+    ["hay_presupuesto", "hay_landing"].forEach(name => {
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+        r.addEventListener("change", () => {
+          document.querySelectorAll(`input[name="${name}"]`).forEach(g => {
+            if (g.dataset.show) {
+              const target = document.getElementById(g.dataset.show);
+              g.checked ? show(target) : hide(target);
+            }
+          });
+          refreshOptionStyles();
+        });
+      });
+    });
+
+    // ---- Validación ----
+    function clearErrors() {
+      document.querySelectorAll(".field-error").forEach(e => e.classList.remove("field-error"));
+    }
+    function validate() {
+      clearErrors();
+      const errores = [];
+      [["mes", "Mes de la parrilla"], ["responsable", "Nombre de quien diligencia"]].forEach(([id, label]) => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { el.classList.add("field-error"); errores.push(label); }
+      });
+      const impulsar = form.querySelector('[name="impulsar_mes"]');
+      if (!impulsar.value.trim()) { impulsar.classList.add("field-error"); errores.push("¿Qué necesita impulsar Kala?"); }
+
+      const hayPauta = document.querySelector('input[name="hay_pauta"]:checked');
+      if (hayPauta && hayPauta.value === "Sí") {
+        const audElegida = document.querySelectorAll('input[name="audiencia"]:checked').length > 0;
+        if (!audElegida) errores.push("Seleccione al menos un público en el módulo de pauta");
+        document.querySelectorAll(".otro-field.visible input[required]").forEach(txt => {
+          if (!txt.value.trim()) { txt.classList.add("field-error"); errores.push("Complete el campo 'Otro' marcado"); }
+        });
+      }
+      return errores;
+    }
+
+    refreshOptionStyles();
+
+    // ---- Envío ----
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const errores = validate();
+      if (errores.length > 0) {
+        message.className = "message error";
+        message.textContent = "Revise: " + [...new Set(errores)].join(" · ");
+        return;
+      }
+
+      const button = form.querySelector("button");
+      button.disabled = true;
+      button.textContent = "Enviando...";
+
+      const payload = {};
+      const hayPauta = document.querySelector('input[name="hay_pauta"]:checked');
+      const pautaActiva = hayPauta && hayPauta.value === "Sí";
+
+      form.querySelectorAll("input, textarea").forEach(el => {
+        if (!el.name) return;
+        if (el.name === "hay_pauta") return; // se setea aparte
+        const oculto = el.offsetParent === null;
+        if (el.type === "radio") {
+          if (!el.checked || oculto) return;
+          payload[el.name] = el.value;
+        } else if (el.type === "checkbox") {
+          if (!el.checked || oculto) return;
+          if (!payload[el.name]) payload[el.name] = [];
+          payload[el.name].push(el.value);
+        } else {
+          if (oculto) return;
+          const val = el.value.trim();
+          if (val) payload[el.name] = val;
+        }
+      });
+
+      payload.hay_pauta = pautaActiva ? "Sí" : "No";
+      payload.fecha_envio = new Date().toISOString();
+      payload.origen = "Brief Mensual Comunicaciones Kala";
+
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error("Error al enviar");
+
+        message.className = "message success";
+        message.textContent = "Brief enviado correctamente.";
+        form.reset();
+        hide(pautaBody);
+        Object.values(bloques).forEach(hide);
+        document.querySelectorAll('[id^="pilar"]').forEach(hide);
+        document.querySelectorAll(".otro-field, #presupuestoDetalle, #landingDetalle").forEach(hide);
+        refreshOptionStyles();
+      } catch (error) {
+        message.className = "message error";
+        message.textContent = "No se pudo enviar. Intente nuevamente.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Enviar brief mensual";
+      }
+    });
+  </script>
+</body>
+</html>
